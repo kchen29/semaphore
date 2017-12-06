@@ -10,7 +10,6 @@
 int main(int argc, char *argv[]) {
   int len;
   for (len = 0; argv[len]; len++) {
-    //printf("%s\n", argv[len]);
   }
 
   if (len < 2)
@@ -19,31 +18,31 @@ int main(int argc, char *argv[]) {
   char *first_arg = argv[1];
   if (strcmp(first_arg, "-v") == 0) {
     int sd = semget(KEY, 1, 0644);
-    if (sd == -1) {
+    if (sd == -1)
       printf("Semaphore not created\n");
-      return 0;
-    }
-    printf("%d\n", semctl(sd, 0, GETVAL));
-    return 0;
+    else
+      printf("%d\n", semctl(sd, 0, GETVAL));
   } else if (strcmp(first_arg, "-r") == 0) {
     int sd = semget(KEY, 1, 0644);
     if (semctl(sd, 0, IPC_RMID) == -1)
       printf("Error removing semaphore\n");
-    return 0;
+    else
+      printf("Removed semaphore\n");
   }
   
   if (len < 3)
     return 0;
 
   if (strcmp(first_arg, "-c") == 0) {
-    int sd = semget(KEY, 1, IPC_CREAT | 0644);
-    int val = (int) strtol(argv[2], NULL, 10);
-    semctl(sd, 0, SETVAL, val);
+    int sd = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0644);
+    if (sd == -1) {
+      printf("Semaphore already created\n");
+    } else {
+      printf("Semaphore created\n");
+      int val = (int) strtol(argv[2], NULL, 10);
+      semctl(sd, 0, SETVAL, val);
+      printf("Value set: %d\n", val);
+    }
   }
-  //int sd = semget(KEY, 1, IPC_CREAT | 0644);
-  //semctl(sd, 0, SETVAL, 4);
-  //semctl(sd, 0, GETVAL);
-  //semctl(sd, 0, IPC_RMID);
-
   return 0;
 }
