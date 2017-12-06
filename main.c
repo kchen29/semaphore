@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
@@ -35,7 +36,9 @@ int main(int argc, char *argv[]) {
     return 0;
 
   if (strcmp(first_arg, "-c") == 0) {
-  //create
+    int sd = semget(KEY, 1, IPC_CREAT | 0644);
+    int val = (int) strtol(argv[2], NULL, 10);
+    semctl(sd, 0, SETVAL, val);
   }
   //int sd = semget(KEY, 1, IPC_CREAT | 0644);
   //semctl(sd, 0, SETVAL, 4);
