@@ -8,9 +8,9 @@
 #define KEY 24602
 
 int main(int argc, char *argv[]) {
-  int len;
-  for (len = 0; argv[len]; len++) {
-  }
+  int len = 0;
+  while (argv[len])
+    len++;
 
   if (len < 2)
     return 0;
@@ -21,13 +21,16 @@ int main(int argc, char *argv[]) {
     if (sd == -1)
       printf("Semaphore not created\n");
     else
-      printf("%d\n", semctl(sd, 0, GETVAL));
+      printf("Semaphore value: %d\n", semctl(sd, 0, GETVAL));
+    return 0;
+    
   } else if (strcmp(first_arg, "-r") == 0) {
     int sd = semget(KEY, 1, 0644);
     if (semctl(sd, 0, IPC_RMID) == -1)
       printf("Error removing semaphore\n");
     else
       printf("Removed semaphore\n");
+    return 0;
   }
   
   if (len < 3)
@@ -38,11 +41,12 @@ int main(int argc, char *argv[]) {
     if (sd == -1) {
       printf("Semaphore already created\n");
     } else {
-      printf("Semaphore created\n");
+      printf("Semaphore created: %d\n", sd);
       int val = (int) strtol(argv[2], NULL, 10);
       semctl(sd, 0, SETVAL, val);
       printf("Value set: %d\n", val);
     }
   }
+  
   return 0;
 }
